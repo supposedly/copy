@@ -17,5 +17,5 @@
     },
 
     "author": "github/supposedly",
-    "permissions": ["clipboardWrite"]
+    "permissions": ["clipboardWrite", "storage"]
 }
