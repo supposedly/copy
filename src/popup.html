@@ -2,13 +2,37 @@
     <head>
         <script src="main.js"></script>
         <style type="text/css">
-        
+            button:hover {
+                opacity: .8;
+            }
+            button {
+                background-color: #43ba2e;
+                color: #fff;
+                padding: 10px 10px;
+                margin: auto;
+                cursor: pointer;
+                border: none;
+                border-radius: 5px;
+                transition: opacity .2s;
+            }
+            .recent {
+                background-color: #2e7fba;
+            }
+            input[type=text] {
+                margin: 2px;
+                border-style: solid;
+                border-color: #dcdcdc;
+                border-radius: 5px;
+                border-width: 1px;
+                padding: 10px;
+            }
         </style>
     </head>
     <body>
         <input type="text" id="input">
         <button type="button" id="submit">Copy</button>
-        <br>
+        <br><br>
+        Last 3:
         <div id="recents"></div>
     </body>
 </html>

@@ -18,9 +18,9 @@ function copy(id = 'input') {
     () => {
       chrome.storage.local.get({recents: []}, items => {
         const arr = items.recents;
-        arr.push(s);
+        arr.unshift(s);
         if (arr.length > 3) {
-          arr.shift();
+          arr.pop();
         }
         chrome.storage.local.set({recents: arr}, () => populateRecents(true));
       })
@@ -42,8 +42,10 @@ function populateRecents(clearFirst = false) {
       const btn = document.createElement('button');
       btn.appendChild(document.createTextNode(recent));
       btn.id = 'recent-' + i;
+      btn.className = 'recent';
       btn.addEventListener('click', () => copy(btn.id));
       div.appendChild(btn);
+      div.appendChild(document.createElement('br'));
     })
   });
 }
