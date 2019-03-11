@@ -14,14 +14,9 @@
             "32": "images/icon32.png"
         },
         "default_title": "Copy HTML Entity",
-        "default_popup": "popup.html"
+        "default_popup": "src/popup.html"
     },
 
     "author": "github/supposedly",
-    "background": {
-        "scripts": ["main.js"],
-        "persistent": false
-    },
-
     "permissions": ["clipboardWrite"]
 }
