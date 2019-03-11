@@ -10,8 +10,8 @@ function parse(s) {
 }
 
 
-function copy() {
-  const s = document.getElementById('input').value;
+function copy(id = 'input') {
+  const s = document.getElementById(id).value;
   navigator.clipboard.writeText(
     parse(s)
   ).then(
@@ -23,16 +23,28 @@ function copy() {
           arr.shift();
         }
         chrome.storage.local.set({recent: arr}, () => {});
+        populateRecents(true);
       })
     },
     () => {}
   );
 }
 
-function populateRecents() {
-  chrome.storage.local.get({recents: []}, items => {
-    for (const recent of items.recents) {
-      // ...
+
+function populateRecents(clearFirst = false) {
+  const div = document.getElementById('recents');
+  if (clearFirst) {
+    while (div.lastChild) {
+      div.removeChild(div.lastChild);
     }
+  }
+  chrome.storage.local.get({recents: []}, items => {
+    items.recents.forEach((recent, i) => {
+      const btn = document.createElement('button');
+      btn.appendChild(document.createTextNode(recent));
+      btn.id = 'recent-' + i;
+      btn.addEventListener('click', () => copy(btn.id));
+      div.appendChild(btn);
+    })
   });
 }
