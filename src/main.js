@@ -1,6 +1,6 @@
 const PARSER = new DOMParser();
 window.onload = function() {
-  document.getElementById('submit').addEventListener('click', copy);
+  document.getElementById('submit').addEventListener('click', () => copy());
   populateRecents();
 };
 
@@ -16,14 +16,13 @@ function copy(id = 'input') {
     parse(s)
   ).then(
     () => {
-      chrome.storage.local.get({recent: []}, items => {
-        const arr = items.recent;
+      chrome.storage.local.get({recents: []}, items => {
+        const arr = items.recents;
         arr.push(s);
         if (arr.length > 3) {
           arr.shift();
         }
-        chrome.storage.local.set({recent: arr}, () => {});
-        populateRecents(true);
+        chrome.storage.local.set({recents: arr}, () => populateRecents(true));
       })
     },
     () => {}
