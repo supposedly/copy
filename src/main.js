@@ -1,6 +1,6 @@
 const PARSER = new DOMParser();
 window.onload = function() {
-  document.getElementById('submit').addEventListener('click', () => copy());
+  document.getElementById('submit').addEventListener('click', () => copy(document.getElementById('input').value));
   populateRecents();
 };
 
@@ -10,15 +10,14 @@ function parse(s) {
 }
 
 
-function copy(id = 'input') {
-  const s = document.getElementById(id).value;
+function copy(string) {
   navigator.clipboard.writeText(
-    parse(s)
+    parse(string)
   ).then(
     () => {
       chrome.storage.local.get({recents: []}, items => {
         const arr = items.recents;
-        arr.unshift(s);
+        arr.unshift(string);
         if (arr.length > 3) {
           arr.pop();
         }
@@ -38,12 +37,11 @@ function populateRecents(clearFirst = false) {
     }
   }
   chrome.storage.local.get({recents: []}, items => {
-    items.recents.forEach((recent, i) => {
+    items.recents.forEach(recent => {
       const btn = document.createElement('button');
       btn.appendChild(document.createTextNode(recent));
-      btn.id = 'recent-' + i;
       btn.className = 'recent';
-      btn.addEventListener('click', () => copy(btn.id));
+      btn.addEventListener('click', () => copy(recent));
       div.appendChild(btn);
       div.appendChild(document.createElement('br'));
     })
