@@ -2,6 +2,7 @@ const PARSER = new DOMParser();
 window.onload = function() {
   document.getElementById('submit').addEventListener('click', () => copy(document.getElementById('input').value));
   populateRecents();
+  populateFavorites();
 };
 
 
@@ -37,7 +38,7 @@ function copy(string) {
           obj[string] = {score: 0, age: 0};
         }
         obj[string].score++;
-        chrome.storage.local.set({favorites: obj}, () => populateCommonEntries(true));
+        chrome.storage.local.set({favorites: obj}, () => populateFavorites(true));
       });
     },
     () => {}
@@ -52,14 +53,14 @@ function populateRecents(clearFirst = false) {
   }
   chrome.storage.local.get({recents: []}, items => {
     items.recents.forEach(el => {
-      div.appendChild(newButton(el, 'quick-copy', () => copy(el)));
+      div.appendChild(newButton(el, 'recent', () => copy(el)));
       div.appendChild(document.createElement('br'));
     })
   });
 }
 
 
-function populateCommonEntries(clearFirst = false) {
+function populateFavorites(clearFirst = false) {
   const div = document.getElementById('favorites');
   if (clearFirst) {
     clearChildren(div);
@@ -71,7 +72,8 @@ function populateCommonEntries(clearFirst = false) {
     ).filter(a => obj[a].score > 1)
     .slice(0, 3)
     .forEach(el => {
-      div.appendChild(newButton(el, 'quick-copy', () => copy(el)));
+      div.appendChild(newButton(el, 'favorite', () => copy(el)));
+      div.appendChild(document.createElement('br'));
     });
   });
 }
