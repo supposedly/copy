@@ -1,7 +1,7 @@
 const PARSER = new DOMParser();
 window.onload = function() {
   document.getElementById('submit').addEventListener('click', () => copy(document.getElementById('input').value));
-  document.getElementById('input').addEventListener('input', (e) => preview(e.target.value));
+  document.getElementById('input').addEventListener('input', e => preview(e.target.value));
   populateRecents();
   populateFavorites();
 };
