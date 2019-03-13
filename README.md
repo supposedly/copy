@@ -13,5 +13,4 @@ TBD
 
 ## Potential todos
 - Firefox support, maybe not Edge (depending on how difficult the latter is)
-- Realtime preview (not too hard)
 - Names for common entities
