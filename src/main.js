@@ -1,13 +1,19 @@
 const PARSER = new DOMParser();
 window.onload = function() {
   document.getElementById('submit').addEventListener('click', () => copy(document.getElementById('input').value));
+  document.getElementById('input').addEventListener('input', (e) => preview(e.target.value));
   populateRecents();
   populateFavorites();
 };
 
 
-function parse(s) {
-  return PARSER.parseFromString(s, 'text/html').body.textContent;
+function parse(s, attr = 'textContent') {
+  return PARSER.parseFromString(s, 'text/html').body[attr];
+}
+
+
+function preview(string) {
+  document.getElementById('preview').innerHTML = string === '' ? '&#8203;' : parse(string, 'innerHTML');
 }
 
 
