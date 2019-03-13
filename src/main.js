@@ -23,8 +23,8 @@ function copy(string) {
         }
         chrome.storage.local.set({recents: arr}, () => populateRecents(true));
       });
-      chrome.storage.local.get({common: {}}, items => {
-        const obj = items.common;
+      chrome.storage.local.get({favorites: {}}, items => {
+        const obj = items.favorites;
         Object.entries(obj).forEach(([key, o]) => {
           if (++o.age % 5 === 0) {
             o.score--;
@@ -37,7 +37,7 @@ function copy(string) {
           obj[string] = {score: 0, age: 0};
         }
         obj[string].score++;
-        chrome.storage.local.set({common: obj}, () => populateCommonEntries(true));
+        chrome.storage.local.set({favorites: obj}, () => populateCommonEntries(true));
       });
     },
     () => {}
@@ -51,8 +51,8 @@ function populateRecents(clearFirst = false) {
     clearChildren(div);
   }
   chrome.storage.local.get({recents: []}, items => {
-    items.recents.forEach(recent => {
-      div.appendChild(newButton(recent, 'recent', () => copy(recent)));
+    items.recents.forEach(el => {
+      div.appendChild(newButton(el, 'quick-copy', () => copy(el)));
       div.appendChild(document.createElement('br'));
     })
   });
@@ -60,18 +60,18 @@ function populateRecents(clearFirst = false) {
 
 
 function populateCommonEntries(clearFirst = false) {
-  const div = document.getElementById('common');
+  const div = document.getElementById('favorites');
   if (clearFirst) {
     clearChildren(div);
   }
-  chrome.storage.local.get({common: {}}, items => {
-    const obj = items.common;
+  chrome.storage.local.get({favorites: {}}, items => {
+    const obj = items.favorites;
     Object.keys(obj).sort(
       (a, b) => obj[a].score - obj[b].score
     ).filter(a => obj[a].score > 1)
     .slice(0, 3)
     .forEach(el => {
-      div.appendChild(newButton(el, 'recent', () => copy(el)));
+      div.appendChild(newButton(el, 'quick-copy', () => copy(el)));
     });
   });
 }
@@ -90,7 +90,7 @@ function newButton(content, cls, onclick) {
     btn.appendChild(document.createTextNode(content));
   }
   if (cls !== undefined) {
-    btn.class = cls;
+    btn.className = cls;
   }
   if (onclick !== undefined) {
     btn.addEventListener('click', onclick);
