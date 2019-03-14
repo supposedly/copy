@@ -21,9 +21,8 @@ function preview(string) {
 function copy(string) {
   navigator.clipboard.writeText(
     parse(string)
-  ).then(() =>
-    string
-      .match(ENTITY_PATTERN)
+  ).then(() => Promise.all(
+    string.match(ENTITY_PATTERN)
       .map(s => {
         const parsed = parse(s);
         if (parsed === s) {
@@ -41,35 +40,63 @@ function copy(string) {
         return ''.slice(0, -(parsedSymbolCount - 1));
       })
       .filter(s => s !== '')
-      .forEach(updateStatsWith)
-  );
+      .map(s => updateStatsWith(s, true))
+  )).then(() => Promise.all([
+    populateRecents(true),
+    populateFavorites(true),
+  ]));
 }
 
 
-function updateStatsWith(entity) {
-  chrome.storage.local.get({recents: []}, items => {
-    const arr = items.recents;
-    arr.unshift(entity);
-    if (arr.length > 3) {
-      arr.pop();
-    }
-    chrome.storage.local.set({recents: arr}, () => populateRecents(true));
-  });
-  chrome.storage.local.get({favorites: {}}, items => {
-    const obj = items.favorites;
-    Object.entries(obj).forEach(([key, o]) => {
-      if (++o.age % 5 === 0) {
-        o.score--;
+function updateStatsWith(entity, multiple = false) {
+  return Promise.all([updateRecents(entity, multiple), updateFavorites(entity, multiple)]);
+}
+
+
+function updateRecents(entity, multiple) {
+  return new Promise(resolve => {
+    chrome.storage.local.get({recents: []}, items => {
+      const arr = items.recents;
+      arr.unshift(entity);
+      if (arr.length > 3) {
+        arr.pop();
       }
-      if (o.score < 0) {
-        delete obj[key];
-      }
+      chrome.storage.local.set({recents: arr}, () => {
+        if (multiple) {
+          resolve();
+        } else {
+          return populateRecents(true);
+        }
+      });
     });
-    if (!obj.hasOwnProperty(entity)) {
-      obj[entity] = {score: 0, age: 0};
-    }
-    obj[entity].score++;
-    chrome.storage.local.set({favorites: obj}, () => populateFavorites(true));
+  });
+}
+
+
+function updateFavorites(entity, multiple) {
+  return new Promise(resolve => {
+    chrome.storage.local.get({favorites: {}}, items => {
+      const obj = items.favorites;
+      Object.entries(obj).forEach(([key, o]) => {
+        if (++o.age % 5 === 0) {
+          o.score--;
+        }
+        if (o.score < 0) {
+          delete obj[key];
+        }
+      });
+      if (!obj.hasOwnProperty(entity)) {
+        obj[entity] = {score: 0, age: 0};
+      }
+      obj[entity].score++;
+      chrome.storage.local.set({favorites: obj}, () => {
+        if (multiple) {
+          resolve();
+        } else {
+          return populateFavorites(true);
+        }
+      });
+    });
   });
 }
 
@@ -79,10 +106,13 @@ function populateRecents(clearFirst = false) {
   if (clearFirst) {
     clearChildren(div);
   }
-  chrome.storage.local.get({recents: []}, items => {
-    items.recents.forEach(el => {
-      div.appendChild(newButton(el, 'recent', () => copy(el)));
-      div.appendChild(document.createElement('br'));
+  return new Promise(resolve => {
+    chrome.storage.local.get({recents: []}, items => {
+      items.recents.forEach(el => {
+        div.appendChild(newButton(el, 'recent', () => copy(el)));
+        div.appendChild(document.createElement('br'));
+      });
+      resolve();
     })
   });
 }
@@ -93,16 +123,19 @@ function populateFavorites(clearFirst = false) {
   if (clearFirst) {
     clearChildren(div);
   }
-  chrome.storage.local.get({favorites: {}}, items => {
-    const obj = items.favorites;
-    Object.keys(obj).sort(
-      (a, b) => obj[a].score - obj[b].score
-    ).filter(a => obj[a].score > 1)
-    .slice(0, 3)
-    .forEach(el => {
-      div.appendChild(newButton(el, 'favorite', () => copy(el)));
-      div.appendChild(document.createElement('br'));
-    });
+  return new Promise(resolve => {
+    chrome.storage.local.get({favorites: {}}, items => {
+      const obj = items.favorites;
+      Object.keys(obj).sort(
+        (a, b) => obj[a].score - obj[b].score
+      ).filter(a => obj[a].score > 1)
+      .slice(0, 3)
+      .forEach(el => {
+        div.appendChild(newButton(el, 'favorite', () => copy(el)));
+        div.appendChild(document.createElement('br'));
+      });
+      resolve();
+    })
   });
 }
 
