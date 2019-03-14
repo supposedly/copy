@@ -121,6 +121,7 @@ function populateRecents(clearFirst = false) {
     chrome.storage.local.get({recents: []}, items => {
       items.recents.forEach(el => {
         const div = document.createElement('div');
+        div.className = 'btn-container';
         div.appendChild(newButton(el, 'recent', () => copyOne(el)));
         div.appendChild(newPre(el));
         div.appendChild(document.createElement('br'));

@@ -30,26 +30,32 @@
                 flex: 0 0 50%;
             }
             .recent {
+                display: inline-block;
                 background-color: #2e7fba;
                 margin-top: 3px;
                 height: 36px;
             }
             .favorite {
+                display: inline-block;
                 background-color: #2e7fba;
                 margin-top: 3px;
                 height: 36px;
-                float: right;
             }
             .favorite:hover~.btn-preview,
             .recent:hover~.btn-preview {
                 opacity: 1;
             }
             .btn-preview {
+                display: inline-block;
                 background-color: #000;
                 pointer-events: none;
                 margin-top: 3px;
                 margin-left: 4px;
                 opacity: 0;
+            }
+            .btn-container {
+                overflow: auto;
+                white-space: nowrap;
             }
             #preview {
                 user-select: none;
@@ -67,8 +73,8 @@
                 <span>Last 3:<br></span>
                 <div id="recents"></div>
             </div>
-            <div class="half-aligned">
-                <span style="float:right">Your favorites:<br></span>
+            <div class="half-aligned" style="margin-left:4px">
+                <span>Your favorites:<br></span>
                 <div id="favorites"></div>
             </div>
         </div>
