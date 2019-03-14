@@ -19,7 +19,7 @@
                 transition: opacity .2s;
             }
             input[type=text] {
-                margin: 2px;
+                width: 100%;
                 border-style: solid;
                 border-color: #dcdcdc;
                 border-radius: 5px;
@@ -37,6 +37,7 @@
             }
             .favorite {
                 display: inline-block;
+                max-width: 5em;
                 background-color: #2e7fba;
                 margin-top: 3px;
                 height: 36px;
@@ -63,17 +64,17 @@
             }
         </style>
     </head>
-    <body>
+    <body style="width:20em">
         <div id="preview">&#8203;</div>
         <input type="text" id="input" autocomplete="off">
-        <button type="button" id="submit">Copy</button>
+        <button style="margin-top:3px" type="button" id="submit">Copy</button>
         <br><br>
         <div id="main-area">
             <div class="half-aligned">
                 <span>Last 3:<br></span>
                 <div id="recents"></div>
             </div>
-            <div class="half-aligned" style="margin-left:4px">
+            <div class="half-aligned" style="margin-left:10px">
                 <span>Your favorites:<br></span>
                 <div id="favorites"></div>
             </div>
