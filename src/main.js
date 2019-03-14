@@ -51,6 +51,13 @@ function copy(string) {
 }
 
 
+function copyOne(entity) {
+  navigator.clipboard.writeText(
+    parse(entity)
+  ).then(() => updateStatsWith(entity, false));
+}
+
+
 function updateStatsWith(entity, multiple = false) {
   return Promise.all([updateRecents(entity, multiple), updateFavorites(entity, multiple)]);
 }
@@ -112,7 +119,7 @@ function populateRecents(clearFirst = false) {
   return new Promise(resolve => {
     chrome.storage.local.get({recents: []}, items => {
       items.recents.forEach(el => {
-        div.appendChild(newButton(el, 'recent', () => copy(el)));
+        div.appendChild(newButton(el, 'recent', () => copyOne(el)));
         div.appendChild(document.createElement('br'));
       });
       resolve();
@@ -134,7 +141,7 @@ function populateFavorites(clearFirst = false) {
       ).filter(a => obj[a].score > 1)
       .slice(0, 3)
       .forEach(el => {
-        div.appendChild(newButton(el, 'favorite', () => copy(el)));
+        div.appendChild(newButton(el, 'favorite', () => copyOne(el)));
         div.appendChild(document.createElement('br'));
       });
       resolve();
@@ -167,6 +174,6 @@ function newButton(content, cls, onclick) {
 
 function numSymbols(string) {
   // string.length would count some unicode symbols,
-  // e.g. emojis, as 2. Spreading into an array avoids this
+  // e.g. emojis, as 2. Spreading into an array avoids this.
   return [...string].length;
 }
