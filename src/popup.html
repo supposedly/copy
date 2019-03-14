@@ -40,13 +40,19 @@
                 height: 36px;
                 float: right;
             }
+            .favorite:hover~.btn-preview,
+            .recent:hover~.btn-preview {
+                opacity: 1;
+            }
             .btn-preview {
-                background-color: #e4e4e4;
-                display: inline-block;
-                padding: 4px;
-                border-radius: 10px;
-                box-sizing: border-box;
-                height: 36px;
+                background-color: #000;
+                color: #fff;
+                padding: 10px 10px;
+                margin: auto;
+                border-radius: 5px;
+                pointer-events: none;
+                opacity: 0;
+                transition: opacity 0.2s;
             }
             #preview {
                 user-select: none;

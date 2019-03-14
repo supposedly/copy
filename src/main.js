@@ -112,16 +112,18 @@ function updateFavorites(entity, multiple) {
 
 
 function populateRecents(clearFirst = false) {
-  const div = document.getElementById('recents');
+  const mainDiv = document.getElementById('recents');
   if (clearFirst) {
-    clearChildren(div);
+    clearChildren(mainDiv);
   }
   return new Promise(resolve => {
     chrome.storage.local.get({recents: []}, items => {
       items.recents.forEach(el => {
+        const div = document.createElement('div');
         div.appendChild(newButton(el, 'recent', () => copyOne(el)));
         div.appendChild(newPre(el));
         div.appendChild(document.createElement('br'));
+        mainDiv.appendChild(div);
       });
       resolve();
     })
@@ -130,9 +132,9 @@ function populateRecents(clearFirst = false) {
 
 
 function populateFavorites(clearFirst = false) {
-  const div = document.getElementById('favorites');
+  const mainDiv = document.getElementById('favorites');
   if (clearFirst) {
-    clearChildren(div);
+    clearChildren(mainDiv);
   }
   return new Promise(resolve => {
     chrome.storage.local.get({favorites: {}}, items => {
@@ -142,9 +144,11 @@ function populateFavorites(clearFirst = false) {
       ).filter(a => obj[a].score > 1)
       .slice(0, 3)
       .forEach(el => {
+        const div = document.createElement('div');
         div.appendChild(newButton(el, 'favorite', () => copyOne(el)));
         div.appendChild(newPre(el));
         div.appendChild(document.createElement('br'));
+        mainDiv.appendChild(div);
       });
       resolve();
     })
@@ -175,7 +179,7 @@ function newButton(content, cls, onclick) {
 
 
 function newPre(el) {
-  const pre = document.createElement('pre');
+  const pre = document.createElement('button');
   pre.className = 'btn-preview';
   pre.innerHTML = el;
   return pre;
