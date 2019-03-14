@@ -120,6 +120,7 @@ function populateRecents(clearFirst = false) {
     chrome.storage.local.get({recents: []}, items => {
       items.recents.forEach(el => {
         div.appendChild(newButton(el, 'recent', () => copyOne(el)));
+        div.appendChild(newPre(el));
         div.appendChild(document.createElement('br'));
       });
       resolve();
@@ -142,6 +143,7 @@ function populateFavorites(clearFirst = false) {
       .slice(0, 3)
       .forEach(el => {
         div.appendChild(newButton(el, 'favorite', () => copyOne(el)));
+        div.appendChild(newPre(el));
         div.appendChild(document.createElement('br'));
       });
       resolve();
@@ -169,6 +171,14 @@ function newButton(content, cls, onclick) {
     btn.addEventListener('click', onclick);
   }
   return btn;
+}
+
+
+function newPre(el) {
+  const pre = document.createElement('pre');
+  pre.className = 'btn-preview';
+  pre.innerHTML = el;
+  return pre;
 }
 
 
