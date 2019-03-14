@@ -3,6 +3,7 @@ const ENTITY_PATTERN = /&(?:(?:#[0-9]+|#x[0-9a-f]+|[a-z0-9]+);|[a-z][a-z0-9]{1,5
 window.onload = function() {
   document.getElementById('submit').addEventListener('click', () => copy(document.getElementById('input').value));
   document.getElementById('input').addEventListener('input', e => preview(e.target.value));
+  document.getElementById('input').focus();
   populateRecents();
   populateFavorites();
 };
