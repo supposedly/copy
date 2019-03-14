@@ -1,4 +1,5 @@
 const PARSER = new DOMParser();
+const ENTITY_PATTERN = /&(?:(?:#[0-9]+|#x[0-9a-f]+|[a-z0-9]+);|[a-z][a-z0-9]{1,5})/gi;
 window.onload = function() {
   document.getElementById('submit').addEventListener('click', () => copy(document.getElementById('input').value));
   document.getElementById('input').addEventListener('input', e => preview(e.target.value));
@@ -20,35 +21,56 @@ function preview(string) {
 function copy(string) {
   navigator.clipboard.writeText(
     parse(string)
-  ).then(
-    () => {
-      chrome.storage.local.get({recents: []}, items => {
-        const arr = items.recents;
-        arr.unshift(string);
-        if (arr.length > 3) {
-          arr.pop();
+  ).then(() =>
+    string
+      .match(ENTITY_PATTERN)
+      .map(s => {
+        const parsed = parse(s);
+        if (parsed === s) {
+          // if there was no change then we know s is invalid
+          return '';
         }
-        chrome.storage.local.set({recents: arr}, () => populateRecents(true));
-      });
-      chrome.storage.local.get({favorites: {}}, items => {
-        const obj = items.favorites;
-        Object.entries(obj).forEach(([key, o]) => {
-          if (++o.age % 5 === 0) {
-            o.score--;
-          }
-          if (o.score < 0) {
-            delete obj[key];
-          }
-        });
-        if (!obj.hasOwnProperty(string)) {
-          obj[string] = {score: 0, age: 0};
+        const parsedSymbolCount = numSymbols(parsed);
+        if (parsedSymbolCount === 1) {
+          // if only one symbol resulted then we know s is valid
+          return s;
         }
-        obj[string].score++;
-        chrome.storage.local.set({favorites: obj}, () => populateFavorites(true));
-      });
-    },
-    () => {}
+        // else we know that at least the beginning of s is a valid entity
+        // So we strip the last (parsedSymbolCount - 1) chars off of s, meaning if
+        // s == '&ampabc' and parsed == '&abc', we strip that 'abc' to leave the entity
+        return ''.slice(0, -(parsedSymbolCount - 1));
+      })
+      .filter(s => s !== '')
+      .forEach(updateStatsWith)
   );
+}
+
+
+function updateStatsWith(entity) {
+  chrome.storage.local.get({recents: []}, items => {
+    const arr = items.recents;
+    arr.unshift(entity);
+    if (arr.length > 3) {
+      arr.pop();
+    }
+    chrome.storage.local.set({recents: arr}, () => populateRecents(true));
+  });
+  chrome.storage.local.get({favorites: {}}, items => {
+    const obj = items.favorites;
+    Object.entries(obj).forEach(([key, o]) => {
+      if (++o.age % 5 === 0) {
+        o.score--;
+      }
+      if (o.score < 0) {
+        delete obj[key];
+      }
+    });
+    if (!obj.hasOwnProperty(entity)) {
+      obj[entity] = {score: 0, age: 0};
+    }
+    obj[entity].score++;
+    chrome.storage.local.set({favorites: obj}, () => populateFavorites(true));
+  });
 }
 
 
@@ -104,4 +126,11 @@ function newButton(content, cls, onclick) {
     btn.addEventListener('click', onclick);
   }
   return btn;
+}
+
+
+function numSymbols(string) {
+  // string.length would count some unicode symbols,
+  // e.g. emojis, as 2. Spreading into an array avoids this
+  return [...string].length;
 }
