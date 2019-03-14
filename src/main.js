@@ -21,7 +21,7 @@ function preview(string) {
 function copy(string) {
   navigator.clipboard.writeText(
     parse(string)
-  ).then(() => Promise.all(
+  ).then(() =>
     string.match(ENTITY_PATTERN)
       .map(s => {
         const parsed = parse(s);
@@ -40,8 +40,11 @@ function copy(string) {
         return ''.slice(0, -(parsedSymbolCount - 1));
       })
       .filter(s => s !== '')
-      .map(s => updateStatsWith(s, true))
-  )).then(() => Promise.all([
+      .reduce(
+        (acc, s) => acc.then(() => updateStatsWith(s, true)),
+        Promise.resolve()
+      )
+  ).then(() => Promise.all([
     populateRecents(true),
     populateFavorites(true),
   ]));
