@@ -169,6 +169,7 @@ function newButton(content, cls, onclick) {
   const btn = document.createElement('button');
   if (content !== undefined) {
     btn.appendChild(document.createTextNode(content));
+    btn.title = content;
   }
   if (cls !== undefined) {
     btn.className = cls;
