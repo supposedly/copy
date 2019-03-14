@@ -32,11 +32,24 @@
             .recent {
                 background-color: #2e7fba;
                 margin-top: 3px;
+                height: 36px;
             }
             .favorite {
                 background-color: #2e7fba;
                 margin-top: 3px;
+                height: 36px;
                 float: right;
+            }
+            .favorite:hover~.btn-preview,
+            .recent:hover~.btn-preview {
+                opacity: 1;
+            }
+            .btn-preview {
+                background-color: #000;
+                pointer-events: none;
+                margin-top: 3px;
+                margin-left: 4px;
+                opacity: 0;
             }
             #preview {
                 user-select: none;
