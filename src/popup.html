@@ -5,10 +5,12 @@
             #main-area {
                 display: flex;
             }
-            button:hover {
+            button:hover,
+            input[type=button]:hover {
                 opacity: .8;
             }
-            button {
+            button,
+            input[type=button] {
                 background-color: #43ba2e;
                 color: #fff;
                 padding: 10px 10px;
@@ -69,9 +71,10 @@
     </head>
     <body style="width:20em">
         <div id="preview">&#8203;</div>
+        <form>
         <input type="text" id="input" autocomplete="off">
-        <button style="margin-top:3px" type="button" id="submit">Copy</button>
-        <br><br>
+        <input style="margin-top:3px" type="button" value="Copy" id="submit">
+        </form>
         <div id="main-area">
             <div class="half-aligned">
                 <span>Last 3:<br></span>
