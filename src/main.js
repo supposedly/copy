@@ -33,12 +33,12 @@ function copy(string) {
         const parsedSymbolCount = numSymbols(parsed);
         if (parsedSymbolCount === 1) {
           // if only one symbol resulted then we know s is valid
-          return s;
+          return s.endsWith(';') ? s : s + ';';
         }
         // else we know that at least the beginning of s is a valid entity
         // So we strip the last (parsedSymbolCount - 1) chars off of s, meaning if
         // s == '&ampabc' and parsed == '&abc', we strip that 'abc' to leave the entity
-        return ''.slice(0, -(parsedSymbolCount - 1));
+        return s.slice(0, -(parsedSymbolCount - 1)) + ';';
       })
       .filter(s => s !== '')
       .reduce(
