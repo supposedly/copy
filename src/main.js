@@ -92,18 +92,19 @@ function updateFavorites(entity, multiple) {
   return new Promise(resolve => {
     chrome.storage.local.get({favorites: {}}, items => {
       const obj = items.favorites;
+      if (!obj.hasOwnProperty(entity)) {
+        obj[entity] = {score: 0, age: 0};
+      }
       Object.entries(obj).forEach(([key, o]) => {
-        if (++o.age % 5 === 0) {
+        if (key === entity) {
+          o.score++;
+        } else if (++o.age % 4 === 0) {
           o.score--;
         }
         if (o.score < 0) {
           delete obj[key];
         }
       });
-      if (!obj.hasOwnProperty(entity)) {
-        obj[entity] = {score: 0, age: 0};
-      }
-      obj[entity].score++;
       chrome.storage.local.set({favorites: obj}, () => {
         if (multiple) {
           resolve();
@@ -147,8 +148,9 @@ function populateFavorites(clearFirst = false) {
       const obj = items.favorites;
       Object.keys(obj).sort(
         (a, b) => obj[a].score - obj[b].score
-      ).filter(a => obj[a].score > 1)
+      ).filter(s => obj[s].score > 1)
       .slice(0, 3)
+      .reverse()
       .forEach(el => {
         const div = document.createElement('div');
         div.appendChild(newButton(el, 'favorite', () => copyOne(el)));
