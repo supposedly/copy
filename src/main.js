@@ -194,10 +194,10 @@ function populateFavorites(clearFirst = false) {
     chrome.storage.local.get({favorites: {}}, items => {
       const obj = items.favorites;
       Object.keys(obj).sort(
-        (a, b) => obj[a].score - obj[b].score
+        // descending order
+        (a, b) => obj[b].score - obj[a].score
       ).filter(s => obj[s].score > 1)
       .slice(0, 3)
-      .reverse()
       .forEach(el => {
         const div = document.createElement('div');
         div.appendChild(newButton(el, 'favorite', () => copyOne(el)));
