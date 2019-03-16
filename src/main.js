@@ -1,5 +1,6 @@
 const PARSER = new DOMParser();
 const ENTITY_PATTERN = /&(?:(?:#[0-9]+|#x[0-9a-f]+|[a-z0-9]+);|[a-z][a-z0-9]{1,5})/gi;
+
 window.onload = function() {
   const textbox = document.getElementById('input');
   document.getElementById('submit').addEventListener('click', () => copy(textbox.value));
@@ -11,16 +12,35 @@ window.onload = function() {
 };
 
 
+/**
+ * Parse an HTML-escaped string into unescaped text
+ * @param {string} s String to parse as HTML
+ * @param {string} attr JS attribute to return from newly parsed body
+ *  (e.g. 'textContent' or 'innerHTML')
+ */
 function parse(s, attr = 'textContent') {
   return PARSER.parseFromString(s, 'text/html').body[attr];
 }
 
 
+/**
+ * Set DOM's 'preview' element to the parsed contents of an HTML-escaped string,
+ * accounting for emptiness by instead inserting a ZWSP
+ * @param {string} string String to preview
+ */
 function preview(string) {
   document.getElementById('preview').innerHTML = string === '' ? '&#8203;' : parse(string, 'innerHTML');
 }
 
 
+/**
+ * The main operation. Takes a string, unescapes it, copies that to clipboard,
+ * and then updates the "recent" and "favorites" statistics with any HTML
+ * entities present in that string.
+ * Handles non-semicolon-terminated entities, but normalizes these in the latter
+ * step.
+ * @param {string} string String to copy and update from
+ */
 function copy(string) {
   navigator.clipboard.writeText(
     parse(string)
@@ -56,6 +76,10 @@ function copy(string) {
 }
 
 
+/**
+ * Same as copy(), but for when there is only a single entity and nothing else to be copied
+ * @param {string} entity String containing a single entity to copy and update with
+ */
 function copyOne(entity) {
   navigator.clipboard.writeText(
     parse(entity)
@@ -63,11 +87,21 @@ function copyOne(entity) {
 }
 
 
+/**
+ * Update "recents" and ""
+ * @param {string} entity String containing a single HTML entity to update with
+ * @param {boolean} multiple Whether this update is part of a multiple-entity run or not
+ */
 function updateStatsWith(entity, multiple = false) {
   return Promise.all([updateRecents(entity, multiple), updateFavorites(entity, multiple)]);
 }
 
 
+/**
+ * Update the "recently used" queue
+ * @param {string} entity String containing a single HTML entity to update with
+ * @param {boolean} multiple Whether this update is part of a multiple-entity run or not
+ */
 function updateRecents(entity, multiple) {
   return new Promise(resolve => {
     chrome.storage.local.get({recents: []}, items => {
@@ -88,6 +122,11 @@ function updateRecents(entity, multiple) {
 }
 
 
+/**
+ * Update the "your favorites" list
+ * @param {string} entity String containing a single HTML entity to update with
+ * @param {boolean} multiple Whether this update is part of a multiple-entity run or not
+ */
 function updateFavorites(entity, multiple) {
   return new Promise(resolve => {
     chrome.storage.local.get({favorites: {}}, items => {
@@ -117,6 +156,10 @@ function updateFavorites(entity, multiple) {
 }
 
 
+/**
+ * Update the div that displays most-recently-copied entities
+ * @param {boolean} clearFirst Whether to clear the div before populating
+ */
 function populateRecents(clearFirst = false) {
   const mainDiv = document.getElementById('recents');
   if (clearFirst) {
@@ -138,6 +181,10 @@ function populateRecents(clearFirst = false) {
 }
 
 
+/**
+ * Update the div that displays most-copied entities
+ * @param {boolean} clearFirst Whether to clear the div before populating
+ */
 function populateFavorites(clearFirst = false) {
   const mainDiv = document.getElementById('favorites');
   if (clearFirst) {
@@ -164,6 +211,10 @@ function populateFavorites(clearFirst = false) {
 }
 
 
+/**
+ * Delete all children of a div
+ * @param {HTMLElement} div div to clear children of
+ */
 function clearChildren(div) {
   while (div.lastChild) {
     div.removeChild(div.lastChild);
@@ -171,6 +222,12 @@ function clearChildren(div) {
 }
 
 
+/**
+ * Create a new, customizable HTML button element
+ * @param {string} content Content to display within button
+ * @param {string} cls CSS classname to apply to button
+ * @param {function} onclick onClick event listener to add to button
+ */
 function newButton(content, cls, onclick) {
   const btn = document.createElement('button');
   if (content !== undefined) {
@@ -187,6 +244,10 @@ function newButton(content, cls, onclick) {
 }
 
 
+/**
+ * Create a new "preview" element for HTML entities
+ * @param {string} el String containing escaped HTML entity to display
+ */
 function newPre(el) {
   const pre = document.createElement('button');
   pre.className = 'btn-preview';
@@ -195,8 +256,13 @@ function newPre(el) {
 }
 
 
+/**
+ * Count number of unicode symbols in a string.
+ * Differs from string.length in that it counts
+ * some unicode symbols, e.g. emojis, as one character
+ * instead of two
+ * @param {string} string String to count symbols in
+ */
 function numSymbols(string) {
-  // string.length would count some unicode symbols,
-  // e.g. emojis, as 2. Spreading into an array avoids this.
   return [...string].length;
 }
