@@ -1,9 +1,11 @@
 const PARSER = new DOMParser();
 const ENTITY_PATTERN = /&(?:(?:#[0-9]+|#x[0-9a-f]+|[a-z0-9]+);|[a-z][a-z0-9]{1,5})/gi;
 window.onload = function() {
-  document.getElementById('submit').addEventListener('click', () => copy(document.getElementById('input').value));
-  document.getElementById('input').addEventListener('input', e => preview(e.target.value));
-  document.getElementById('input').focus();
+  const textbox = document.getElementById('input');
+  document.getElementById('submit').addEventListener('click', () => copy(textbox.value));
+  textbox.addEventListener('keyup', event => { if (event.key === 'Enter') copy(textbox.value); });
+  textbox.addEventListener('input', e => preview(e.target.value));
+  textbox.focus();
   populateRecents();
   populateFavorites();
 };
@@ -33,11 +35,13 @@ function copy(string) {
         const parsedSymbolCount = numSymbols(parsed);
         if (parsedSymbolCount === 1) {
           // if only one symbol resulted then we know s is valid
+          // Also, normalize w/ semicolon
           return s.endsWith(';') ? s : s + ';';
         }
         // else we know that at least the beginning of s is a valid entity
         // So we strip the last (parsedSymbolCount - 1) chars off of s, meaning if
         // s == '&ampabc' and parsed == '&abc', we strip that 'abc' to leave the entity
+        // Also, normalize w/ semicolon
         return s.slice(0, -(parsedSymbolCount - 1)) + ';';
       })
       .filter(s => s !== '')
