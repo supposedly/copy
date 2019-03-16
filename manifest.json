@@ -1,7 +1,7 @@
 {
     "manifest_version": 2,
     "name": "&copy;",
-    "version": "0.0.6",
+    "version": "0.0.7",
     "description": "Unescapes HTML entity codes and copies to clipboard",
     "icons": {
         "128": "images/icon128.png"
