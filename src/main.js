@@ -62,7 +62,7 @@ function copy(string) {
         // So we strip the last (parsedSymbolCount - 1) chars off of s, meaning if
         // s == '&ampabc' and parsed == '&abc', we strip that 'abc' to leave the entity
         // Also, normalize w/ semicolon
-        return s.slice(0, -(parsedSymbolCount - 1)) + ';';
+        return s.slice(0, 1-parsedSymbolCount) + ';';
       })
       .filter(s => s !== '')
       .reduce(
@@ -106,9 +106,11 @@ function updateRecents(entity, multiple) {
   return new Promise(resolve => {
     chrome.storage.local.get({recents: []}, items => {
       const arr = items.recents;
-      arr.unshift(entity);
-      if (arr.length > 3) {
-        arr.pop();
+      if (arr[0] !== entity) {
+        arr.unshift(entity);
+        if (arr.length > 3) {
+          arr.pop();
+        }
       }
       chrome.storage.local.set({recents: arr}, () => {
         if (multiple) {
