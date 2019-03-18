@@ -1,88 +1,26 @@
 <html>
     <head>
         <script src="main.js"></script>
-        <style type="text/css">
-            #main-area {
-                display: flex;
-            }
-            button:hover {
-                opacity: .8;
-            }
-            button {
-                background-color: #43ba2e;
-                color: #fff;
-                padding: 10px 10px;
-                margin: auto;
-                cursor: pointer;
-                border: none;
-                border-radius: 5px;
-                transition: opacity .2s;
-                max-width: 6em;
-                overflow: hidden;
-                white-space: nowrap;
-                text-overflow: ellipsis;
-            }
-            input[type=text] {
-                width: 100%;
-                border-style: solid;
-                border-color: #dcdcdc;
-                border-radius: 5px;
-                border-width: 1px;
-                padding: 10px;
-            }
-            .half-aligned {
-                flex: 0 0 50%;
-            }
-            .recent {
-                display: inline-block;
-                background-color: #2e7fba;
-                margin-top: 3px;
-                height: 36px;
-            }
-            .favorite {
-                display: inline-block;
-                background-color: #2e7fba;
-                margin-top: 3px;
-                height: 36px;
-            }
-            .favorite:hover~.btn-preview,
-            .recent:hover~.btn-preview {
-                opacity: 1;
-            }
-            .btn-preview {
-                display: inline-block;
-                background-color: #000;
-                pointer-events: none;
-                margin-top: 3px;
-                margin-left: 4px;
-                opacity: 0;
-            }
-            .btn-container {
-                overflow: auto;
-                white-space: nowrap;
-            }
-            #preview {
-                user-select: none;
-                color: #777;
-            }
-        </style>
+        <link rel="stylesheet" type="text/css" href="popup.css">
     </head>
     <body style="width:20em">
-        <div id="preview">&#8203;</div>
+        <div class="small-text" id="preview">&#8203;</div>
         <input type="text" id="input" autocomplete="off">
         <button style="margin-top:3px" type="button" id="submit">Copy</button>
         <br><br>
         <div id="main-area">
             <div class="half-aligned">
-                <span>Last 3:<br></span>
+                <span class="small-text">Last 3:</span>
+                <br>
                 <div id="recents"></div>
             </div>
             <div class="half-aligned" style="margin-left:10px">
-                <span>Your favorites:<br></span>
+                <span class="small-text">Your favorites:</span>
+                <br>
                 <div id="favorites"></div>
             </div>
         </div>
         <br>
-        <a style="opacity: 50%" target="_blank" href="https://html.spec.whatwg.org/multipage/named-characters.html">Reference</a>
+        <a class="small-text" style="opacity: 50%" target="_blank" href="https://html.spec.whatwg.org/multipage/named-characters.html">Reference</a>
     </body>
 </html>

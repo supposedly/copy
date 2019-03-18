@@ -14,10 +14,10 @@ codepen, always modifying it to copy a bunch of other characters. No more!
 
 ## Browser support
 - [x] Chrome
-- [ ] Firefox
+- [x] Firefox
 - [ ] Edge
 
 ## Potential todos
-- Firefox, Edge support
+- Edge support
 - Names for common entities
 - Typing entities by character name, a la Python `'\N{}'`
